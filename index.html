@@ -1,0 +1,162 @@
+<!-- esto es un comentario -->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"> <!-- Para poner todo tipo de asentos-->
+	<title>Catálogo de Servicios Libres</title>
+	<!-- Importacion de librerias -->
+	<link rel="stylesheet" type="text/css" href="css/jquery.mobile-1.4.5.min.css"> <!-- librerias css -->
+	<link rel="stylesheet" type="text/css" href="css/mystilo.css">
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
+
+	<script type="text/javascript">
+		$(document).ready(function (){  //Funcion por defecto
+			$("#GServicios").tap(function(){ // EVENTO PARA REGISTRAR SERVICIOS
+				var NS=$("#NomServicio").val();
+				var D=$("#Direccion").val();
+				var R=$("#RFC").val();
+				var T=$("#Telefono").val();
+				var clasi=$("#clasificacion").val();
+				var foto="img/fotos/foto1.jpg"
+				var Lat=$("#Latitud").val();
+				var Lon=$("#Longitud").val();
+				//alert(" "+"Nom="+NS+"&Dire="+D+"&RFC="+R+"&Tel="+T+"&Clasi="+clasi+"&Foto="+foto+"&Lat="+Lat+"&Lon="+Lon);
+				$.ajax({
+					type:"POST",
+					url:"http://www.manuelmovil.esy.es/Guardar.php",
+					data:"Nom="+NS+"&Dire="+D+"&RFC="+R+"&Tel="+T+"&Clasi="+clasi+"&Foto="+foto+"&Lat="+Lat+"&Lon="+Lon,
+					success: function respuesta(datos){
+						alert(datos);
+					}
+				});
+				//alert("Datos a guardar: "+NS+","+D+","+R+","+T+""+" Cordenadas: "+Lat+","+Lon);
+			});	
+			
+			$("#btnConServ").tap(function(){ //EVENTO PARA CONSULTAR SERVICIOS
+				//alert("Funciona el boton cocsultar servicios");
+				$.ajax({
+					type: "POST",
+					url: "http://www.manuelmovil.esy.es/Consulta.php",
+					data:"",
+					success: function ConsultaTodo(datos){
+						//alert(datos);
+						var reg=$.parseJSON(datos);//convertir una variable a tipo JSON en tipo areglo
+						var contenido=$("#datosTodos"); //almacenamos el contenido en nuestra variable contenido
+						contenido.html("<table border='1' id='tb1'><th>Id</th><th>Nombre</th><th>Direccion</th><th>RFC</th><th>Telefono</th><th>Clasif</th><th>Foto</th><th>Lat</th><th>Long</th>"); //lo mandamos a nuestra pagina HTML
+						var fila=$("#tb1");
+						for(var i in reg){
+							fila.append("<tr><td>"+reg[i].Id_Servicio+"</td><td>"+reg[i].Nombre_servicio+"</td><td>"+reg[i].Direccion+"</td><td>"+reg[i].RFC+"</td><td>"+reg[i].Telefono+"</td><td>"+reg[i].Clasificacion+"</td><td>"+reg[i].Foto+"</td><td>"+reg[i].Latitud+"</td><td>"+reg[i].Longitud+"</td></tr>");//tomar lo que ya tiene y agrega
+						}
+						fila.append("</table>");
+					}
+				});
+			});
+
+		}); //Cuando se ejecuta todo el documento
+	</script>
+	<style type="text/css">
+		p{
+			text-align: center;
+		}
+	</style>
+</head>
+<body bgcolor="white">
+	<div data-role ="page" id="Principal">
+		<div data-role="header">
+			<p>Catálogo de Servicios Libres</p> 
+		</div>
+		<div data-role="header">
+			<p>Oprecacíones</p>
+		</div>
+		<div data-role="content">
+			<ul data-role="listview">
+				<li><a href="#RegistrarS" type="button">Registrar servicios</a></li>
+				<li><a href="#ConsultarS" type="button">Consultar servicios</a></li>
+				<li><a href="#ActualizarS" type="button">Actualizar servicios</a></li>
+				<li><a href="#EliminarS" type="button">Eliminar servicios</a></li>
+			</ul>
+		</div>
+		<div data-role ="footer" align="center">
+			<a href="#Acerca_De" class="ui-btn ui-icon-home ui-btn-icon-left" data-transition="pop">Acerca de..</a>
+		</div>
+	</div>
+
+	<div data-role ="page" id="RegistrarS" data-them="a">
+		<div data-role="header">
+			<p>Registro de servicios</p>
+		</div>
+		<div data-role="content">
+			<input type="text" id="NomServicio" placeholder="Nombre del servicio" maxlength="25">
+			<input type="text" id="Direccion" placeholder="Dirección" maxlength="50">
+			<input type="text" id="RFC" placeholder="RFC" maxlength="15">
+			<input type="text" id="Telefono" placeholder="Teléfono" maxlength="15">
+			<select id="clasificacion">
+				<option value="Restaurante">Restaurante</option>
+				<option value="Zapateria">Zapateria</option>
+				<option value="Farmacia">Farmacia</option>
+			<input type="button" id="TomarF" value="Tomar Foto">
+			<input type="button" id="ObtenerCordendas" value="Obtener Cordenadas">
+			<input type="text" id="Latitud" placeholder="Latitud" maxlength="15">
+			<input type="text" id="Longitud" placeholder="Longitud" maxlength="15">
+			<input type="button" id="GServicios" value="Guardar Servicios">
+		</div>
+		<div data-role ="footer" align="center">
+			<a href="#Principal" class="ui-btn ui-icon-home ui-btn-icon-left" data-transition="pop">Regresar</a>
+		</div>
+	</div>
+	<div data-role ="page" id="ConsultarS" data-them="a">
+		<div data-role="header">
+			<p>Consulta de servicios</p>
+		</div>
+		<div data-role="content">
+			<input type="button" id="btnConServ" value="Consultar Todos los Servicios">
+			<div id="datosTodos"></div>
+		</div>
+		<div data-role ="footer" align="center">
+			<a href="#Principal" class="ui-btn ui-icon-home ui-btn-icon-left" data-transition="pop">Regresar</a>
+		</div>
+	</div>
+	<div data-role ="page" id="ActualizarS" data-them="a">
+		<div data-role="header">
+			<p> Actualización de Servicios</p>
+		</div>
+		<div data-role="content">
+
+		</div>
+		<div data-role ="footer" align="center">
+			<a href="#Principal" class="ui-btn ui-icon-home ui-btn-icon-left" data-transition="pop">Regresar</a>
+		</div>
+	</div>
+	<div data-role ="page" id="EliminarS" data-them="a">
+		<div data-role="header">
+			<p>Eliminacion de Servicios</p>
+		</div>
+		<div data-role="content">
+
+		</div>
+		<div data-role ="footer" align="center">
+			<a href="#Principal" class="ui-btn ui-icon-home ui-btn-icon-left" data-transition="pop">Regresar</a>
+		</div>
+	</div>
+	<div data-role="page" id="Acerca_De">
+		<div data-role="header">
+			<p>DATOS DEL DESARROLLADOR</p>
+		</div>	
+		<div data-role="content">
+			<p>NOMBRE: MANUEL GONZALEZ GARCIA</p>
+			<p>ESTUDIOS</p>
+			<p>NUMERO DE CONTROL: 13940057</p>
+			<p>CARRERA: ING. SISTEMAS COMPUTACIONALES</p>
+			<p>MATERIA: BASE DE DATOS PARA DISPOSITIVOS MOVILES</p>
+			<p>CONTACTO</p>
+			<p>magoga65@gmail.com</p>
+			<p>2761035193</p>
+		</div>
+		<div data-role="footer" align="center">
+			<a href="#Principal" class="ui-btn ui-icon-home ui-btn-icon-left" data-transition="pop">Regresar</a>
+		</div>
+	</div>	
+
+</body>
+</html>
